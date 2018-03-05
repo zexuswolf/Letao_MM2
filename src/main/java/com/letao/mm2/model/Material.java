@@ -98,6 +98,39 @@ public class Material {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Material other = (Material) obj;
+		if (active != other.active)
+			return false;
+		if (englishName == null) {
+			if (other.englishName != null)
+				return false;
+		} else if (!englishName.equals(other.englishName))
+			return false;
+		if (id != other.id)
+			return false;
+		if (materialType == null) {
+			if (other.materialType != null)
+				return false;
+		} else if (!materialType.equals(other.materialType))
+			return false;
+		if (materialTypeId != other.materialTypeId)
+			return false;
+		if (thaiName == null) {
+			if (other.thaiName != null)
+				return false;
+		} else if (!thaiName.equals(other.thaiName))
+			return false;
+		return true;
+	}
 	
 	@Override
 	public String toString() {
