@@ -10,7 +10,7 @@ Feature: REST - Material
 		
 	Scenario: Create material
 		When call POST "/api/materials" with material data
-			| 3 | ‡§È° µ√Õ‡∫Õ√Ï√’Ë | Strawberry cake | 4 |
+			| 3 | ‡∏™‡∏ï‡∏£‡∏≠‡πÄ‡∏ö‡∏≠‡∏£‡πå‡∏£‡∏µ‡πà‡∏ä‡∏µ‡∏™‡πÄ‡∏Ñ‡πâ‡∏Å | Strawberry cake | 4 |
 		Then server should return status 201
 		
 	Scenario: Delete material
@@ -19,5 +19,5 @@ Feature: REST - Material
 		
 	Scenario: Update material
 		When call PUT "/api/materials" with material data
-			| 3 | ‡§È° µ√Õ‡∫Õ√Ï√’Ë | Strawberry cake | 4 |
+			| 3 | ‡∏™‡∏ï‡∏£‡∏≠‡πÄ‡∏ö‡∏≠‡∏£‡πå‡∏£‡∏µ‡πà‡∏ä‡∏µ‡∏™‡πÄ‡∏Ñ‡πâ‡∏Å | Strawberry cake | 4 |
 		Then server should return status 200

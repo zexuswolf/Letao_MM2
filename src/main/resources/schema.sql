@@ -21,6 +21,18 @@ create table LETAO_MM_MATERIAL (
     ACTIVE number(1,0) default 1
 );
 
+create or replace view ACTIVE_MATERIAL_VIEW as
+	select
+		mat.ID as ID,
+		mat.THAI_NAME as MAT_TH_NAME,
+		mat.ENGLISH_NAME as MAT_EN_NAME,
+		matType.THAI_NAME as TYPE_TH_NAME,
+		matType.ENGLISH_NAME as TYPE_EN_NAME
+	from LETAO_MM_MATERIAL mat
+	left join LETAO_MM_MATERIAL_TYPE matType
+	on mat.MATERIAL_TYPE_ID = matType.ID
+	where mat.ACTIVE = 1;
+
 -- Support for Spring Batch
 
 DROP TABLE BATCH_JOB_EXECUTION_CONTEXT;

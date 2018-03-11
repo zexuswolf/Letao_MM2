@@ -1,6 +1,7 @@
 package com.letao.mm2.job.create_material_batch;
 
 import javax.sql.DataSource;
+import org.springframework.validation.Validator;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -9,6 +10,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JpaItemWriter;
@@ -16,12 +18,16 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.item.validator.SpringValidator;
+import org.springframework.batch.item.validator.ValidatingItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
 import com.letao.mm2.model.Material;
 
 @Configuration
@@ -54,6 +60,7 @@ public class CreateMaterialBatch {
     	return stepBuilderFactory.get("createMatrialBatchStep")
     			.<Material,Material> chunk(10)
     			.reader(createMatrialBatchStepReader(OVERRIDDEN_BY_EXPRESSION))
+    			.processor(materialValidatingProcessor())
     			.writer(createMatrialBatchStepWriter())
     			.build();
     }
@@ -62,8 +69,8 @@ public class CreateMaterialBatch {
     @StepScope
     public FlatFileItemReader<Material> createMatrialBatchStepReader(@Value("#{jobParameters[file]}") String fname) {
     	FlatFileItemReader<Material> reader = new FlatFileItemReader();
-        reader.setResource(new FileSystemResource(fname));
-        //reader.setResource(new ClassPathResource("sample-data.csv"));
+        	reader.setResource(new FileSystemResource(fname));
+        	//reader.setResource(new ClassPathResource("fname"));
         reader.setLineMapper(new DefaultLineMapper<Material>() {{
             setLineTokenizer(new DelimitedLineTokenizer() {{
                 setNames(new String[] { "id", "thaiName","englishName","materialTypeId" });
@@ -73,6 +80,19 @@ public class CreateMaterialBatch {
             }});
         }});
         return reader;
+    }
+    
+    @Bean
+    public Validator validator() {
+        return new LocalValidatorFactoryBean();
+    }
+    
+    public ItemProcessor<Material,Material> materialValidatingProcessor() {
+    	SpringValidator<Material> springValidator = new SpringValidator();
+        springValidator.setValidator(validator());
+        ValidatingItemProcessor<Material> ValidatingItemProcessor = new ValidatingItemProcessor();
+        ValidatingItemProcessor.setValidator(springValidator);
+        return ValidatingItemProcessor;
     }
     
     @Bean("createMatrialBatchStepWriter")
